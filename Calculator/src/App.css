@@ -1,7 +1,7 @@
 #calculator-container {
-  width: 50vw;
+  width: 500px;
   min-width: fit-content;
-  height: 70vh;
+  height: 90vh;
   align-items:center;
   display:flex;
   flex-direction: column;
@@ -46,6 +46,6 @@ button {
   background-color: rgba(0, 0, 0, 0.13);
   font-size:3rem;
   border-radius: 5px;
-  width:80px;
-
+  width:90px;
+  
 }
