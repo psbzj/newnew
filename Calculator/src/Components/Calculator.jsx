@@ -13,9 +13,12 @@ const Calculator = () => {
     const handleNumberClick = (digit) => {
         if (reset) {
         setValue(digit);
-        setStoredValue('');
-        setOperator('');
-        setReset(false);  
+        setReset(false);
+        
+        if (operator === '=') {
+            setStoredValue('');
+            setOperator('');
+        }
     } else {
         setValue((prev) => (prev === '0' ? digit : prev + digit));
         }
@@ -77,9 +80,12 @@ const Calculator = () => {
     const handleDecimal = () => {
         if (reset) {
             setValue('0.');
-            setStoredValue('');
-            setOperator('');
             setReset(false)
+
+            if (operator === '=') {
+                setStoredValue('');
+                setOperator('');
+            }
             return;
         }
         if (!value.includes('.')) {
@@ -90,9 +96,12 @@ const Calculator = () => {
     const handleDoubleZero = () => {
         if (reset) {
             setValue('0');
-            setStoredValue('');
-            setOperator('');
             setReset(false);
+
+            if (operator === '=' ) {
+                setStoredValue('');
+                setOperator('');
+            }
             return;
         }
         if (value !== '0') {
