@@ -24,8 +24,13 @@
 
 #stored-value {
   font-size:2rem;
-  align-self:start;
-   
+  text-align:left;
+   margin:0;
+}
+
+#curr-value {
+  text-align: center;
+  margin:0;
 }
 
 #screen {

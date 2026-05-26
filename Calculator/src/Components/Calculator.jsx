@@ -7,10 +7,16 @@ const Calculator = () => {
     const [value, setValue] = useState('0');
     const [storedValue, setStoredValue] = useState('');
     const [operator, setOperator] = useState('');
+    const [reset, setReset] = useState(false);
 
 
     const handleNumberClick = (digit) => {
-        setValue((prev) => (prev === '0' ? digit : prev + digit))
+        if (reset) {
+        setValue(digit);
+        setReset(false);  
+    } else {
+        setValue((prev) => (prev === '0' ? digit : prev + digit));
+        }
     };
 
     const handleClear = () => {
@@ -19,11 +25,36 @@ const Calculator = () => {
 
     const handleOperator = (button) => {
         //if there is an operator, perform stored value (operator) value and set as stored value, then store operator as new operator input. if there is operator but only stored value, no current value, then do nothing.
-        
-        setOperator(button)
-        setStoredValue(value)
-        setValue('0')
+        if (operator && storedValue && !reset) {
+            let num1 = parseFloat(storedValue);
+            let num2 = parseFloat(value);
+            let total = 0;
 
+            switch(operator) {
+            case "*": total = num1 * num2; break;
+            case "/": total = num2 !== 0 ? num1 / num2 : 'Error'; break;
+            case "+": total = num1 + num2; break;
+            case "-": total = num1 - num2; break;
+            default: return;
+        }
+       if (total === 'Error') {
+            setValue('Error');
+            setStoredValue('');
+            setOperator('');
+            setReset(true);
+            return;
+        } else {
+            total = Number(total.toFixed(4));
+            setValue(String(total));
+            setStoredValue(String(total)); // Store the intermediate total (e.g., 64)
+    }
+        } else {
+            // If it's just the first operator (e.g., typing the very first 8 *), just store the value
+            setStoredValue(value);
+        }
+
+        setOperator(button);
+        setReset(true);
         
     }
 
@@ -31,6 +62,29 @@ const Calculator = () => {
         setValue('0');
         setStoredValue('');
         setOperator('');
+        setReset(false);
+    };
+
+    const handleDecimal = () => {
+        if (reset) {
+            setValue('0.');
+            setReset(false)
+            return;
+        }
+        if (!value.includes('.')) {
+            setValue((prev) => prev + '.');
+        }
+    };
+
+    const handleDoubleZero = () => {
+        if (reset) {
+            setValue('0');
+            setReset(false);
+            return;
+        }
+        if (value !== '0') {
+            setValue((prev) => prev + '00');
+        }
     };
 
     const handleBackspace = () => {
@@ -61,12 +115,17 @@ const Calculator = () => {
                     return;
             }
 
-            if (typeof total === 'number' && !isNaN(total)) {
-                total = Number(total.toFixed(4))
-                setStoredValue((prev) => (prev + operator + value));
-                setValue(String(total));
+            if (total === 'Error') {
+                setValue('Error');
+                setStoredValue('');
                 setOperator('');
-            }            
+            } else if (typeof total === 'number' && !isNaN(total)) {
+                total = Number(total.toFixed(4));
+                setValue(String(total));
+                setStoredValue('');
+                setOperator('');   
+            }           
+            setReset(true);
         }
     }
 
@@ -103,8 +162,8 @@ const Calculator = () => {
                 
 
                 <button onClick={() => handleNumberClick('0')}>0</button>
-                <button>00</button>
-                <button >.</button>
+                <button onClick={handleDoubleZero}>00</button>
+                <button onClick={handleDecimal}>.</button>
                 <button onClick={handleCalculate}>=</button>
             </div>
         </div>
@@ -113,4 +172,4 @@ const Calculator = () => {
   )
 }
 
-export default Calculator
+export default Calculator;
