@@ -8,7 +8,6 @@ const Calculator = () => {
     const [storedValue, setStoredValue] = useState('');
     const [operator, setOperator] = useState('');
 
-    let total = 0;
 
     const handleNumberClick = (digit) => {
         setValue((prev) => (prev === '0' ? digit : prev + digit))
@@ -20,7 +19,7 @@ const Calculator = () => {
 
     const handleOperator = (button) => {
         //if there is an operator, perform stored value (operator) value and set as stored value, then store operator as new operator input. if there is operator but only stored value, no current value, then do nothing.
-
+        
         setOperator(button)
         setStoredValue(value)
         setValue('0')
@@ -40,7 +39,34 @@ const Calculator = () => {
 
     const handleCalculate = () => {
         //if there is an operator, value 1 and value 2, it calculates and displays total as value in calculator and clear operator and stored value. maybe it stops concatenation on to the total value?
-        
+        if (operator && value && storedValue) {
+            let num1 = parseFloat(storedValue);
+            let num2 = parseFloat(value);
+            let total = 0;
+            
+            switch(operator){
+                case "*":
+                    total = num1 * num2; 
+                    break;
+                case "/": 
+                    total = num2 !== 0 ? num1 / num2 : 'Error'; 
+                    break;
+                case "+": 
+                    total = num1 + num2; 
+                    break;
+                case "-": 
+                    total = num1 - num2;
+                    break;
+                default:
+                    return;
+            }
+
+            if (!isNaN(total)) {
+                setStoredValue((prev) => (prev + operator + value));
+                setValue(String(total));
+                setOperator('');
+            }            
+        }
     }
 
   return (
@@ -78,7 +104,7 @@ const Calculator = () => {
             <button onClick={() => handleNumberClick('0')}>0</button>
             <button>00</button>
             <button >.</button>
-            <button >=</button>
+            <button onClick={handleCalculate}>=</button>
         </div>
         </div>
     </div>
