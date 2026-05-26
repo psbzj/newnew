@@ -13,6 +13,8 @@ const Calculator = () => {
     const handleNumberClick = (digit) => {
         if (reset) {
         setValue(digit);
+        setStoredValue('');
+        setOperator('');
         setReset(false);  
     } else {
         setValue((prev) => (prev === '0' ? digit : prev + digit));
@@ -24,6 +26,13 @@ const Calculator = () => {
     };
 
     const handleOperator = (button) => {
+
+        if (operator === '=') {
+            setStoredValue(value);
+            setOperator(button);
+            setReset(true);
+            return;
+        }
         //if there is an operator, perform stored value (operator) value and set as stored value, then store operator as new operator input. if there is operator but only stored value, no current value, then do nothing.
         if (operator && storedValue && !reset) {
             let num1 = parseFloat(storedValue);
@@ -68,6 +77,8 @@ const Calculator = () => {
     const handleDecimal = () => {
         if (reset) {
             setValue('0.');
+            setStoredValue('');
+            setOperator('');
             setReset(false)
             return;
         }
@@ -79,6 +90,8 @@ const Calculator = () => {
     const handleDoubleZero = () => {
         if (reset) {
             setValue('0');
+            setStoredValue('');
+            setOperator('');
             setReset(false);
             return;
         }
@@ -121,9 +134,10 @@ const Calculator = () => {
                 setOperator('');
             } else if (typeof total === 'number' && !isNaN(total)) {
                 total = Number(total.toFixed(4));
-                setValue(String(total));
-                setStoredValue('');
-                setOperator('');   
+
+                setStoredValue((prev) => prev + ' ' + operator + ' ' + value); 
+                setOperator('='); // Set operator to '=' to finish the sentence
+                setValue(String(total));  
             }           
             setReset(true);
         }
