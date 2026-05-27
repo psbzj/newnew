@@ -3,26 +3,41 @@ import { useState, useEffect } from 'react'
 
 
 const Calculator = () => {
-
     const [value, setValue] = useState('0');
     const [storedValue, setStoredValue] = useState('');
     const [operator, setOperator] = useState('');
     const [reset, setReset] = useState(false);
 
+    const formatWithCommas = (str) => {
+    if (!str || str === 'Error') return str;
+    
+    // Split into integer and decimal parts so typing a decimal doesn't break
+    const [integerPart, decimalPart] = str.split('.');
+    
+    // Format the integer part with commas
+    const formattedInteger = Number(integerPart).toLocaleString('en-US');
+    
+    // Recombine with the decimal part if it exists
+    if (str.includes('.')) {
+      return `${formattedInteger}.${decimalPart}`;
+    }
+    
+    return formattedInteger;
+  };
 
     const handleNumberClick = (digit) => {
-        if (reset) {
-        setValue(digit);
-        setReset(false);
-        
-        if (operator === '=') {
+        if (reset || value === 'Error') {
+            setValue(digit);
+            setReset(false);
+            
+            // if storedValue contains an old text sentence (like "10 + 5"), clear it out 
+            if (storedValue.includes(' ')) {
             setStoredValue('');
             setOperator('');
-        }
-    } else {
-        if (value.endsWith('.00')) return;
-
-        setValue((prev) => (prev === '0' ? digit : prev + digit));
+            }
+        } else {
+            if (value.endsWith('.00')) return;
+            setValue((prev) => (prev === '0' ? digit : prev + digit));
         }
     };
 
@@ -115,7 +130,14 @@ const Calculator = () => {
     };
 
     const handleBackspace = () => {
-        setValue((prev) => (prev.length > 1 ? prev.slice(0,-1): '0'));
+        setValue((prev) => {
+            // If it ends in .00, slice off the last 3 characters completely
+            if (prev.endsWith('.00')) {
+            return prev.slice(0, -3);
+            }
+            
+            return prev.length > 1 ? prev.slice(0, -1) : '0';
+        });
     };
 
     const handleCalculate = () => {
@@ -168,11 +190,51 @@ const Calculator = () => {
 
             //switch for what to do with each button press. 0-9, operators, decimal, clear (2x),backspace, calculate
             switch(key) {
-                case '0':
-            }
-            
-        }
-    })
+                case '0': case '1':
+                case '2': case '3': 
+                case '4': case '5': 
+                case '6': case '7': 
+                case '8': case '9':
+                    event.preventDefault();
+                    handleNumberClick(key);
+                    break;
+
+                case '+': case '-': case '*': case '/':
+                    event.preventDefault();
+                    handleOperator(key);
+                    break;
+
+                case 'Enter':
+                    event.preventDefault();
+                    handleCalculate();
+                    break;
+
+                case '.':
+                    event.preventDefault();
+                    handleDecimal();
+                    break;
+                
+                case 'Backspace':
+                    event.preventDefault();
+                    handleBackspace();
+                    break;  
+                    
+                case 'Escape':
+                case 'Delete':
+                    event.preventDefault();
+                    handleAllClear();
+                    break;
+
+                default:
+                    break;
+            }            
+        };
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [value, storedValue, operator, reset]);
   return (
     <div>
         <div id="calculator-container">
@@ -180,8 +242,12 @@ const Calculator = () => {
                 <h1>Calculator</h1>
             </div>
             <div id='screen'>
-                <p id='stored-value'>{storedValue} {operator}</p>
-                <p id='curr-value'>{value}</p>
+                <p id='stored-value'>
+                    {storedValue.split(' ')
+                    .map(chunk => (isNaN(chunk) || chunk === '') ? 
+                    chunk : formatWithCommas(chunk)).join(' ')} {operator !== '=' ? operator : ''}
+                </p>
+                <p id='curr-value'>{formatWithCommas(value)}</p>
             </div>
             <div id="calculator-buttons">
                 <button onClick={handleClear}>C</button>
