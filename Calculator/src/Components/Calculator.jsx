@@ -20,6 +20,8 @@ const Calculator = () => {
             setOperator('');
         }
     } else {
+        if (value.endsWith('.00')) return;
+
         setValue((prev) => (prev === '0' ? digit : prev + digit));
         }
     };
@@ -80,13 +82,15 @@ const Calculator = () => {
         if (reset) {
             setValue('0.');
             setReset(false)
-
             if (operator === '=') {
                 setStoredValue('');
                 setOperator('');
             }
-            return;
+        return;
+
         }
+        if (value.endsWith('.00')) return;
+        
         if (!value.includes('.')) {
             setValue((prev) => prev + '.');
         }
@@ -103,7 +107,9 @@ const Calculator = () => {
             }
             return;
         }
-        if (value !== '0') {
+        if (value.endsWith('.00')) return;
+
+        if (!value.includes('.')) {
             setValue((prev) => prev + '.00');
         }
     };
@@ -113,6 +119,7 @@ const Calculator = () => {
     };
 
     const handleCalculate = () => {
+
         if (operator && value && storedValue) {
             let num1 = parseFloat(storedValue);
             let num2 = parseFloat(value);
