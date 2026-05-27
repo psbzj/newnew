@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 
 const Calculator = () => {
@@ -36,7 +36,6 @@ const Calculator = () => {
             setReset(true);
             return;
         }
-        //if there is an operator, perform stored value (operator) value and set as stored value, then store operator as new operator input. if there is operator but only stored value, no current value, then do nothing.
         if (operator && storedValue && !reset) {
             let num1 = parseFloat(storedValue);
             let num2 = parseFloat(value);
@@ -105,7 +104,7 @@ const Calculator = () => {
             return;
         }
         if (value !== '0') {
-            setValue((prev) => prev + '00');
+            setValue((prev) => prev + '.00');
         }
     };
 
@@ -114,7 +113,6 @@ const Calculator = () => {
     };
 
     const handleCalculate = () => {
-        //if there is an operator, value 1 and value 2, it calculates and displays total as value in calculator and clear operator and stored value. maybe it stops concatenation on to the total value?
         if (operator && value && storedValue) {
             let num1 = parseFloat(storedValue);
             let num2 = parseFloat(value);
@@ -152,6 +150,22 @@ const Calculator = () => {
         }
     }
 
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            //save which key is down as key
+            const { key } = event;
+            // if event is repeating, meaning button held down, and it isnt the backspace button, dont.
+            if (event.repeat && key !== 'Backspace') {
+                return;
+            }
+
+            //switch for what to do with each button press. 0-9, operators, decimal, clear (2x),backspace, calculate
+            switch(key) {
+                case '0':
+            }
+            
+        }
+    })
   return (
     <div>
         <div id="calculator-container">
