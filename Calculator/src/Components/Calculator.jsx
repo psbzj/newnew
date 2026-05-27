@@ -20,6 +20,8 @@ const Calculator = () => {
             setOperator('');
         }
     } else {
+        if (value.endsWith('.00')) return;
+
         setValue((prev) => (prev === '0' ? digit : prev + digit));
         }
     };
@@ -81,13 +83,15 @@ const Calculator = () => {
         if (reset) {
             setValue('0.');
             setReset(false)
-
             if (operator === '=') {
                 setStoredValue('');
                 setOperator('');
             }
-            return;
+        return;
+
         }
+        if (value.endsWith('.00')) return;
+        
         if (!value.includes('.')) {
             setValue((prev) => prev + '.');
         }
@@ -104,8 +108,10 @@ const Calculator = () => {
             }
             return;
         }
-        if (value !== '0') {
-            setValue((prev) => prev + '00');
+        if (value.endsWith('.00')) return;
+
+        if (!value.includes('.')) {
+            setValue((prev) => prev + '.00');
         }
     };
 
@@ -114,7 +120,7 @@ const Calculator = () => {
     };
 
     const handleCalculate = () => {
-        //if there is an operator, value 1 and value 2, it calculates and displays total as value in calculator and clear operator and stored value. maybe it stops concatenation on to the total value?
+
         if (operator && value && storedValue) {
             let num1 = parseFloat(storedValue);
             let num2 = parseFloat(value);
